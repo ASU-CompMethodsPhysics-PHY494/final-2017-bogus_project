@@ -1,0 +1,34 @@
+\documentclass[11pt, letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}[1in]
+\usepackage{enumitem}
+\usepackage{amsmath}
+
+\begin{document}
+ 
+\centerline{\textbf{\Large PHY494 - Spring 2017 - Final Project Proposal}}
+\centerline{\large Brian Pickens}
+\hfill
+\subsection*{Problem}
+\paragraph{} The mechanics of quantum physics are strange. One of the (many) difficulties of understanding the quantum world is the reliance of simplified one-dimensional situations to introduce students to a particle's odd wave-like behavior. But we, as far as I know, live in a three-dimensional world and I want to know what a 3D particle looks like. How does it interact over time with rigid or dynamic potential barriers? What does quantum tunneling look like in 3D? Can these be modeled accurately by a computer?
+
+\subsection*{Approach}
+\paragraph{} The main obstacle to answering these questions will be solving Schr\"odinger's equation in three dimensions. It will be necessary to include a time-dependence to model the dynamic situations we will create by answering the questions above. Specifically, we will be attempting to use the real/imaginary position integration scheme by Maestri \textit{et al}.:
+\begin{multline}
+R^{n+1}_{i,j,k} = R^{n-1}_{i,j,k} + 2[(4\alpha + \frac{1}{2}\Delta tV_{i,j,k})I^n_{i,j,k} - \alpha (I^{n}_{i+1,j,k} + I^{n}_{i-1,j,k}\\ + I^{n}_{i,j+1,k} + I^{n}_{i,j-1,k} + I^{n}_{i,j,k+1} + I^{n}_{i,j,k-1})]
+\end{multline}
+\begin{multline}
+I^{n+1}_{i,j,k} = I^{n-1}_{i,j,k} + 2[(4\alpha + \frac{1}{2}\Delta tV_{i,j,k})R^n_{i,j,k} - \alpha (R^{n}_{i+1,j,k} + R^{n}_{i-1,j,k}\\ + R^{n}_{i,j+1,k} + R^{n}_{i,j-1,k} + R^{n}_{i,j,k+1} + R^{n}_{i,j,k-1})]
+\end{multline}
+\paragraph{} To visualize the particle's behavior, we will model the \textit{probability} of detecting the particle at any position. The value of the probability at a data point will be calculated from the above integration scheme. Visualizing a probability density in 3D can be difficult, so we'll be using the yt package which can be installed into the Anaconda distribution of Python.
+
+\subsection*{Objectives}
+
+\begin{itemize}[noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt]
+\item Test algorithm by simulating the behavior of a quantum wavepacket in enclosed 2D spaces.
+\item Move to 3D particle simulation enclosed in a box and in a harmonic oscillator.
+\item Visualize and animate these 3D behaviors in an intuitive and robust manner.
+\item BONUS: Implement 3D quantum tunneling effects for potential barriers.
+\end{itemize}
+
+\end{document}
