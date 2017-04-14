@@ -10,10 +10,10 @@
 \centerline{\large Brian Pickens}
 \hfill
 \subsection*{Problem}
-\paragraph{} The mechanics of quantum physics are strange. One of the (many) difficulties of understanding the quantum world is the reliance of simplified one-dimensional situations to introduce students to a particle's odd wave-like behavior. But we, as far as I know, live in a three-dimensional world and I want to know what a 3D particle looks like. How does it interact over time with rigid or dynamic potential barriers? What does quantum tunneling look like in 3D? Can these be modeled accurately by a computer?
+\paragraph{} The mechanics of quantum physics are strange. One of the (many) difficulties of understanding the quantum world is the reliance of simplified one-dimensional situations to introduce students to a particle's odd wave-like behavior. But we live in a three-dimensional world and I wonder what a 3D particle looks like. How does it interact over time with rigid or dynamic potential barriers? What does quantum tunneling look like in 3D? Can these be modeled accurately by a computer?
 
 \subsection*{Approach}
-\paragraph{} The main obstacle to answering these questions will be solving Schr\"odinger's equation in three dimensions. It will be necessary to include a time-dependence to model the dynamic situations we will create by answering the questions above. Specifically, we will be attempting to use the real/imaginary position integration scheme by Maestri \textit{et al}.:
+\paragraph{} The main obstacle to answering these questions will be solving Schr\"odinger's equation in three dimensions. Specifically, we will be attempting to use the real/imaginary position integration scheme by Maestri \textit{et al}.:
 \begin{multline}
 R^{n+1}_{i,j,k} = R^{n-1}_{i,j,k} + 2[(4\alpha + \frac{1}{2}\Delta tV_{i,j,k})I^n_{i,j,k} - \alpha (I^{n}_{i+1,j,k} + I^{n}_{i-1,j,k}\\ + I^{n}_{i,j+1,k} + I^{n}_{i,j-1,k} + I^{n}_{i,j,k+1} + I^{n}_{i,j,k-1})]
 \end{multline}
@@ -26,9 +26,9 @@ I^{n+1}_{i,j,k} = I^{n-1}_{i,j,k} + 2[(4\alpha + \frac{1}{2}\Delta tV_{i,j,k})R^
 
 \begin{enumerate}[noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt]
 \item Simulate the time-dependent behavior of a Gaussian wave packet in 2D using initial conditions of $\Psi(0, t) = \Psi(L, t) = 0$ and $V(x, t) = \infty$ for $x < 0$ and $x > L$.
-\item Test algorithm by simulating the behavior of a quantum wavepacket in enclosed 2D spaces.
-\item Move to 3D particle simulation enclosed in a box and in a harmonic oscillator.
-\item Visualize and animate these 3D behaviors in an intuitive and robust manner.
+\item Test algorithm by comparing 2D results to the analytical predictions of phenomena such as quantum revival and quantum number degeneracies.
+\item Further test the algorithm by tracking the total integrated probabilty over time.
+\item Move to 3D particle simulation enclosed both in a box and in an isotropic 3D harmonic oscillator, simulated as three independent oscillators in each axis.
 \item BONUS: Implement 3D quantum tunneling effects for potential barriers.
 \end{enumerate}
 
