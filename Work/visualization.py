@@ -77,7 +77,7 @@ def createFrames3D(dataSet, frameName = "default", rotation = 0):
     ----- Arguments -----
     dataSet: numpy array of shape (frames, box side, box side, box side).
     frameName: Filename of the frames generated, without directories.
-    rotation: gradual rotation occurs around the data set across all frames up until this point. BUG: only works for pi/2!
+    rotation: gradual rotation occurs around the data set across all frames up until this point.
     
     ----- Returns -----
     Returns total frames rendered. Frames generated are stored in local Frames/3D directory.
@@ -192,10 +192,10 @@ def animateDataSet(animationName, dataSet, rotation = 0, render3D = True):
         for frame in frameList:
             image = imageio.imread(frame)
             writer.append_data(image)
-            print(' [{}%] Animating frames...'.format(np.ceil(100 * (progressBar / totalFrames))), end = '\r')
+            print('-[visualization.py] [{}%] Animating frames...'.format(np.ceil(100 * (progressBar / totalFrames))), end = '\r')
             progressBar += 1
     
-    print(' [100.0%] Animation complete! Saved {}.gif to Frames directory'.format(animationName))
+    print('-[visualization.py] [100.0%] Animation complete! Saved {}.gif to Frames directory'.format(animationName))
     
     return
 ################################
@@ -204,23 +204,23 @@ def animateDataSet(animationName, dataSet, rotation = 0, render3D = True):
 
 ################################################################################
 # Testing area - will be deleted later
-resolution = 32
-totalFrames = 24
-animationName = "default"
+#resolution = 32
+#totalFrames = 24
+#animationName = "default"
 
-rotation = 0.5 * np.pi
+#rotation = 0.5 * np.pi
 
-testArray3D = np.zeros([totalFrames, resolution, resolution, resolution])
-testArray3D[:, 1:-1, 1:-1, 1:-1] = 0.1
-testArray3D[:, 6:-6, 6:-6, 6:-6] = 0
-testArray3D[:, 12:-12, 12:-12, 12:-12] = 0.5
-testArray3D[:, 14:-14, 14:-14, 14:-14] = 0.9
+#testArray3D = np.zeros([totalFrames, resolution, resolution, resolution])
+#testArray3D[:, 1:-1, 1:-1, 1:-1] = 0.1
+#testArray3D[:, 6:-6, 6:-6, 6:-6] = 0
+#testArray3D[:, 12:-12, 12:-12, 12:-12] = 0.5
+#testArray3D[:, 14:-14, 14:-14, 14:-14] = 0.9
 
-for i in range(totalFrames - 1):
-    testArray3D[i] = testArray3D[i] + 0.01 * (np.random.rand(resolution, resolution, resolution) - 0.5)
-    testArray3D[testArray3D < 0] = 0
-    testArray3D[testArray3D > 1] = 1
-    testArray3D[i+1] = testArray3D[i]
+#for i in range(totalFrames - 1):
+#    testArray3D[i] = testArray3D[i] + 0.01 * (np.random.rand(resolution, resolution, resolution) - 0.5)
+#    testArray3D[testArray3D < 0] = 0
+#    testArray3D[testArray3D > 1] = 1
+#    testArray3D[i+1] = testArray3D[i]
 
-animateDataSet(animationName, testArray3D, rotation, True)
+#animateDataSet(animationName, testArray3D, rotation, True)
 ################################################################################
