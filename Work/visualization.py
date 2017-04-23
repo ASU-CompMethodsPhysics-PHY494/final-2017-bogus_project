@@ -10,6 +10,10 @@ import numpy as np
 import yt
 import imageio
 
+# Make yt not spam the terminal
+# Doesn't work!
+yt.suppressStreamLogging = "True"
+
 ################################
 ### Begin createFrames2D()
 ################################
@@ -58,7 +62,6 @@ def createFrames2D(dataSet, frameName = "default", rotation = 0):
         slc.set_axes_unit('unitary')
     
         slc.save('Frames/2D/{0}{1}'.format(frameName, index))
-        print('-------')
         
     return totalFrames
 ################################
@@ -146,7 +149,6 @@ def createFrames3D(dataSet, frameName = "default", rotation = 0):
         
         # Save away the frame.
         sc.save('Frames/3D/{0}{1}'.format(frameName, index), sigma_clip = 4)
-        print('-------')
         
     return totalFrames
 ################################
