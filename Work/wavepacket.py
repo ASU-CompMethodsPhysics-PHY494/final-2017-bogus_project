@@ -13,7 +13,7 @@ import visualization as view
 ### Begin Wavepacket()
 ################################
 class Wavepacket():
-
+    
     ################################
     ### Begin __init__()
     ################################
@@ -38,11 +38,10 @@ class Wavepacket():
         """
         # Simulation constants
         self.fps = 24
-        self.deltaT = 1
-        self.half_deltaT = 0.5 * self.deltaT
-        self.sigma = 1
-        self.dx = 1
-        self.alpha = 0.5 * self.deltaT/(self.dx*self.dx)
+        self.sigma = 0.5
+        self.deltaX = 0.02
+        self.deltaT = 0.5 * self.deltaX**2
+        self.alpha = 0.5 * self.deltaT/(self.deltaX*self.deltaX)
         
         # Initial Position
         self.initialX = np.ceil(latticeSize / 2)
@@ -109,11 +108,12 @@ class Wavepacket():
                                                                       * np.exp(-1 * (x - self.initialX)**2 / (2 * self.sigma**2))
                                                                       * np.exp(-1 * (y - self.initialY)**2 / (2 * self.sigma**2)))
                                      
-                # Split self.latticeComplex into real and imaginary components, fill lattice arrays at t = 0 and t = 1
+                # Split self.latticeComplex into real and imaginary components, fill lattice arrays at t = 0
                 self.latticeReal[0] = np.real(self.latticeComplex) 
-                self.latticeReal[1] = np.real(self.latticeComplex)
-                self.latticeImag[0] = np.imag(self.latticeComplex)
-                self.latticeImag[1] = np.imag(self.latticeComplex)
+                self.latticeImag[0] = np.imag(self.latticeComplex)    
+                #self.latticeReal[1] = np.real(self.latticeComplex) 
+                #self.latticeImag[1] = np.imag(self.latticeComplex)               
+                           
                 
                 '''
                 if self.potential == "Infinite Box":
@@ -162,7 +162,7 @@ class Wavepacket():
             raise NotImplementedError
             
         else:
-            for t in range(self.totalTime - 1):               
+            for t in range(1, self.totalTime - 1):               
                 # Calculate next real and imaginary wavefunction, excluding exteriors
                 self.latticeReal[t + 1, 1:-1, 1:-1, 0] = (self.latticeReal[t - 1, 1:-1, 1:-1, 0] 
                                                                                     + 2 * (4 * self.alpha + 0.5 * self.deltaT * self.V[1:-1, 1:-1, 0]) * self.latticeImag[t, 1:-1, 1:-1, 0]
@@ -213,6 +213,9 @@ class Wavepacket():
             # Quirk of yt's 2D rendering: Need to set all z values equal to each other
             for z in range(self.latticeSize):
                 self.probDataSet[:, :, :, z] = self.probDataSet[:, :, :, 0]
+                
+            # Clean up trash data so yt doesn't flip out at a negative 0 value   
+            self.probDataSet[self.probDataSet < 1e-16] = 0
     
         print("-[wavepacket.py] [100%] Completed probability calculations in 2D                                  ")
     
@@ -223,12 +226,14 @@ class Wavepacket():
 
 ##### Test stuff
 
-testPacket = Wavepacket(99, 1)
+testPacket = Wavepacket(66, 1)
 
 testPacket.createLattice()
 testPacket.integrateLattice()
 testPacket.calculateProbability()
 
-view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
+#view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
+
+print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
 
 
