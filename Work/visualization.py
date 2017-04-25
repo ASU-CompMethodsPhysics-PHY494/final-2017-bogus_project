@@ -52,10 +52,10 @@ def createFrames2D(dataSet, frameName = "default", rotation = 0):
         ds = yt.load_uniform_grid(frameData, dataSet[index].shape, bbox = boundingBox, nprocs = resolution)
     
         slc = yt.SlicePlot(ds, 'z', 'mesh_id')        
-        slc.set_cmap('all', 'Blues')
+        slc.set_cmap('all', 'Eos B')
         
         # Hold the colorbar in place and rename label
-        slc.set_zlim('all', 0.01, 1)
+        slc.set_zlim('all', 1e-16, 1)
         slc.set_colorbar_label('mesh_id', 'Probability')
         
         # Set x and y labels units to be nothing (1, technically).
