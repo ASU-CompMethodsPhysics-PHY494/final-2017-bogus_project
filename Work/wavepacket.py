@@ -228,7 +228,7 @@ class Wavepacket():
                 self.probDataSet[:, :, :, z] = self.probDataSet[:, :, :, 0]
 
             # Clean up trash data so yt doesn't flip out at a negative 0 value
-            self.probDataSet[self.probDataSet < 1e-16] = 0
+            self.probDataSet[self.probDataSet == -0] = 0
 
         print("-[wavepacket.py] [100%] Completed probability calculations in 2D                                  ")
 
@@ -245,7 +245,7 @@ testPacket.createLattice()
 testPacket.integrateLattice()
 testPacket.calculateProbability()
 
-view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
+#view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
 
 #print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
 #print(testPacket.probDataSet[2, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])

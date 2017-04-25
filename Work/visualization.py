@@ -58,6 +58,9 @@ def createFrames2D(dataSet, frameName = "default", rotation = 0):
         slc.set_zlim('all', 1e-16, 1)
         slc.set_colorbar_label('mesh_id', 'Probability')
         
+        slc.annotate_text((0.05, 0.03), 'System Probability: {}'.format(np.sum(dataSet[index, :, :, 0])), coord_system='figure', text_args={'color':'black'})
+        slc.annotate_title('Probability Density in a 2D Box')
+        
         # Set x and y labels units to be nothing (1, technically).
         slc.set_axes_unit('unitary')
     
