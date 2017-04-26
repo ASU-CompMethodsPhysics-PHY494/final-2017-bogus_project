@@ -62,7 +62,7 @@ class Wavepacket():
 
         # Create simulation arrays
         if self.potential == "Infinite Box":
-            self.V = np.zeros([self.latticeSize, self.latticeSize, self.latticeSize])     
+            self.V = np.zeros([self.latticeSize, self.latticeSize, self.latticeSize])
         #    self.V[0, :, 0] = float('inf')
         #    self.V[self.latticeSize - 1, :, 0] = float('inf')
         #    self.V[:, 0, 0] = float('inf')
@@ -112,8 +112,8 @@ class Wavepacket():
                     for y in range(self.latticeSize):
                         self.latticeComplex[x, y, :] = (np.exp(1j * self.initialkX * x)
                                                                       * np.exp(1j * self.initialkY * y)
-                                                                      * np.exp(-1 * (x - self.initialX)**2 / (2 * self.sigma**2))
-                                                                      * np.exp(-1 * (y - self.initialY)**2 / (2 * self.sigma**2)))
+                                                                      * np.exp(-0.5 * (x - self.initialX)**2 / (self.sigma**2))
+                                                                      * np.exp(-0.5 * (y - self.initialY)**2 / (self.sigma**2)))
                 print("-[wavepacket.py] Created 2D lattice with {0} initial conditions ({1} potential)".format(self.wavepacket, self.potential))
 
             # Split self.latticeComplex into real and imaginary components, fill lattice arrays at t = 0
@@ -164,12 +164,12 @@ class Wavepacket():
                 self.latticeReal[t + 1, 1:-1, 1:-1, 0] = (self.latticeReal[t - 1, 1:-1, 1:-1, 0]
                                                                                         + 2 * ((4 * self.alpha + 0.5 * self.deltaT * self.V[1:-1, 1:-1, 0]) * self.latticeImag[t, 1:-1, 1:-1, 0]
                                                                                          - self.alpha * (self.latticeImag[t, 2:, 1:-1, 0] + self.latticeImag[t, :-2, 1:-1, 0]
-                                                                                        + self.latticeImag[t, 1:-1, 2:, 0] + self.latticeImag[t, 1:-1, :-2, 0]))) 
+                                                                                        + self.latticeImag[t, 1:-1, 2:, 0] + self.latticeImag[t, 1:-1, :-2, 0])))
                 self.latticeImag[t + 1, 1:-1, 1:-1, 0] = (self.latticeImag[t - 1, 1:-1, 1:-1, 0]
                                                                                      - 2 * ((4 * self.alpha + 0.5 * self.deltaT * self.V[1:-1, 1:-1, 0]) * self.latticeReal[t, 1:-1, 1:-1, 0]
                                                                                     + self.alpha * (self.latticeReal[t, 2:, 1:-1, 0] + self.latticeReal[t, :-2, 1:-1, 0]
                                                                                     + self.latticeReal[t, 1:-1, 2:, 0] + self.latticeReal[t, 1:-1, :-2, 0])))
-                
+
                 # If we're doing the Infinite Box potential, set all edges to 0 due to infinite boundary
                 if self.potential == "Infinite Box":
                     self.latticeReal[t + 1, 0, :, 0] = 0
@@ -211,7 +211,8 @@ class Wavepacket():
                 # Ignore half time steps
                 if t % 2 == 0:
                     self.probDataSet[int(t / 2), :, :, 0] = self.latticeReal[t, :, :, 0]**2 + self.latticeImag[t + 1, :, :, 0] * self.latticeImag[t - 1, :, :, 0]
-                    #self.probDataSet[int(t / 2), :, :, 0] = self.latticeImag[t, :, :, 0]**2 + self.latticeReal[t + 1, :, :, 0] * self.latticeReal[t - 1, :, :, 0]
+                else:
+                    self.probDataSet[int(t / 2), :, :, 0] = self.latticeImag[t, :, :, 0]**2 + self.latticeReal[t + 1, :, :, 0] * self.latticeReal[t - 1, :, :, 0]
                 print("-[wavepacket.py] [{}%] Calculating probability in 2D...".format(100 * (np.floor(t / self.totalTime))), end = '\r')
 
             # Quirk of yt's 2D rendering: Need to set all z values equal to each other
@@ -219,7 +220,7 @@ class Wavepacket():
                 self.probDataSet[:, :, :, z] = self.probDataSet[:, :, :, 0]
 
             # Clean up trash data so yt doesn't flip out at a negative 0 value
-            self.probDataSet[self.probDataSet == -0] = 0
+            self.probDataSet[self.probDataSet < 0] = 0
 
         print("-[wavepacket.py] [100%] Completed probability calculations in 2D                                  ")
 
@@ -230,13 +231,13 @@ class Wavepacket():
 
 ##### Test stuff
 
-testPacket = Wavepacket(99, 2)
+testPacket = Wavepacket(99, 3)
 
 testPacket.createLattice()
 testPacket.integrateLattice()
 testPacket.calculateProbability()
 
-#view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
+view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
 
 #print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
 #print(testPacket.probDataSet[2, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
