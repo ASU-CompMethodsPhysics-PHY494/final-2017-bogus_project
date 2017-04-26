@@ -36,7 +36,7 @@ class Wavepacket():
         """
         # Simulation constants
         self.fps = 24
-        self.sigma = 0.5 # 0.5
+        self.sigma = 0.5
         self.deltaX = 0.02
         self.deltaT = 0.5 * self.deltaX**2
         self.alpha = 0.5 * self.deltaT/(self.deltaX*self.deltaX)
@@ -108,12 +108,17 @@ class Wavepacket():
             else:
                 # 2D Gaussian initial conditions
                 # Fill self.latticeComplex with Gaussian wavepacket values
+                ##### Tried different method for calculating Gaussian, doesn't work. Saving just in case we can make it work.
+                #for x in range(self.latticeSize):
+                #    for y in range(self.latticeSize):
+                #        self.latticeReal[0] = np.exp(-0.5 * ((x - self.initialX) / (self.sigma))**2) * np.exp(-0.5 * ((y - self.initialY) / (self.sigma))**2) * np.cos(self.initialkX * x) * np.cos(self.initialkY * y)
+                #        self.latticeImag[1] = np.exp(-0.5 * ((x - self.initialX) / (self.sigma))**2) * np.exp(-0.5 * ((y - self.initialY) / (self.sigma))**2) * np.sin(self.initialkX * x) * np.sin(self.initialkY * y)
                 for x in range(self.latticeSize):
                     for y in range(self.latticeSize):
                         self.latticeComplex[x, y, :] = (np.exp(1j * self.initialkX * x)
                                                                       * np.exp(1j * self.initialkY * y)
-                                                                      * np.exp(-0.5 * (x - self.initialX)**2 / (self.sigma**2))
-                                                                      * np.exp(-0.5 * (y - self.initialY)**2 / (self.sigma**2)))
+                                                                      * np.exp(-0.5 * ((x - self.initialX) / (self.sigma))**2)
+                                                                      * np.exp(-0.5 * ((y - self.initialY) / (self.sigma))**2))
                 print("-[wavepacket.py] Created 2D lattice with {0} initial conditions ({1} potential)".format(self.wavepacket, self.potential))
 
             # Split self.latticeComplex into real and imaginary components, fill lattice arrays at t = 0
@@ -215,14 +220,18 @@ class Wavepacket():
                     self.probDataSet[int(t / 2), :, :, 0] = self.latticeImag[t, :, :, 0]**2 + self.latticeReal[t + 1, :, :, 0] * self.latticeReal[t - 1, :, :, 0]
                 print("-[wavepacket.py] [{}%] Calculating probability in 2D...".format(100 * (np.floor(t / self.totalTime))), end = '\r')
 
+                #assert np.isclose(self.probDataSet.min(), 0), "Minimum probability is not close to 0. Min Value: {}".format(self.probDataSet.min())
+                #assert np.isclose(self.probDataSet.max(), 1), "Maximum probability is not close to 1. Max Value: {}".format(self.probDataSet.max())
             # Quirk of yt's 2D rendering: Need to set all z values equal to each other
             for z in range(self.latticeSize):
                 self.probDataSet[:, :, :, z] = self.probDataSet[:, :, :, 0]
 
             # Clean up trash data so yt doesn't flip out at a negative 0 value
-            self.probDataSet[self.probDataSet < 0] = 0
+            #self.probDataSet[self.probDataSet < 0] = 0
 
-        print("-[wavepacket.py] [100%] Completed probability calculations in 2D                                  ")
+        print("-[wavepacket.py] [100%] Completed probability calculations in 2D")
+        assert np.isclose(self.probDataSet.min(), 0), "Minimum probability is not close to 0. Min Value: {}".format(self.probDataSet.min())
+        assert np.isclose(self.probDataSet.max(), 1), "Maximum probability is not close to 1. Max Value: {}".format(self.probDataSet.max())
 
         return
     ################################
@@ -237,7 +246,7 @@ testPacket.createLattice()
 testPacket.integrateLattice()
 testPacket.calculateProbability()
 
-view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
+#view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
 
 #print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
 #print(testPacket.probDataSet[2, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
