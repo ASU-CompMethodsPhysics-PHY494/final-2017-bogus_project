@@ -38,8 +38,8 @@ class Wavepacket():
         self.fps = 24
         self.sigma = 0.5
         self.deltaX = 0.02
-        self.deltaT = 0.5 * self.deltaX**2
-        self.alpha = 0.5 * self.deltaT/(self.deltaX*self.deltaX)
+        self.deltaT = 0.5 * (self.deltaX*self.deltaX)
+        self.alpha = 0.25 * self.deltaT/(self.deltaX*self.deltaX)
 
         # Initial Position
         self.initialX = np.ceil(latticeSize / 2)
@@ -48,7 +48,7 @@ class Wavepacket():
 
         # Initial Momentum
         # Not well understood, potential bug here
-        self.initialkX = 17 * np.pi  # 17 * np.pi
+        self.initialkX = 17 * np.pi
         self.initialkY = 17 * np.pi
         self.initialkZ = 17 * np.pi
 
@@ -130,10 +130,10 @@ class Wavepacket():
                 self.latticeReal[0, self.latticeSize - 1, :, 0] = 0
                 self.latticeReal[0, :, 0, 0] = 0
                 self.latticeReal[0, :, self.latticeSize - 1, 0] = 0
-                self.latticeImag[1, 0, :, 0] = 0
-                self.latticeImag[1, self.latticeSize - 1, :, 0] = 0
-                self.latticeImag[1, :, 0, 0] = 0
-                self.latticeImag[1, :, self.latticeSize - 1, 0] = 0
+                self.latticeImag[0, 0, :, 0] = 0
+                self.latticeImag[0, self.latticeSize - 1, :, 0] = 0
+                self.latticeImag[0, :, 0, 0] = 0
+                self.latticeImag[0, :, self.latticeSize - 1, 0] = 0
 
         else:
             print("-[wavepacket.py] createLattice(): Unknown wavepacket type for initial conditions! (use 'Gaussian')")
@@ -227,11 +227,13 @@ class Wavepacket():
                 self.probDataSet[:, :, :, z] = self.probDataSet[:, :, :, 0]
 
             # Clean up trash data so yt doesn't flip out at a negative 0 value
-            #self.probDataSet[self.probDataSet < 0] = 0
+            #self.probDataSet[self.probDataSet < -1e-2] = 0
 
+        del self.latticeReal
+        del self.latticeImag
         print("-[wavepacket.py] [100%] Completed probability calculations in 2D")
-        assert np.isclose(self.probDataSet.min(), 0), "Minimum probability is not close to 0. Min Value: {}".format(self.probDataSet.min())
-        assert np.isclose(self.probDataSet.max(), 1), "Maximum probability is not close to 1. Max Value: {}".format(self.probDataSet.max())
+        #assert np.isclose(self.probDataSet.min(), 0), "Minimum probability is not close to 0. Min Value: {}".format(self.probDataSet.min())
+        #assert np.isclose(self.probDataSet.max(), 1), "Maximum probability is not close to 1. Max Value: {}".format(self.probDataSet.max())
 
         return
     ################################
@@ -240,13 +242,13 @@ class Wavepacket():
 
 ##### Test stuff
 
-testPacket = Wavepacket(99, 3)
+testPacket = Wavepacket(99, 9)
 
 testPacket.createLattice()
 testPacket.integrateLattice()
 testPacket.calculateProbability()
 
-#view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
+view.animateDataSet("Test2DInfBox", testPacket.probDataSet, (0.5 * np.pi), False)
 
 #print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
 #print(testPacket.probDataSet[2, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
