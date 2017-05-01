@@ -35,11 +35,18 @@ class Wavepacket():
         Returns Nothing
         """
         # Simulation constants
+        self.is3D = is3D
         self.fps = 24
-        self.sigma = 0.5
-        self.deltaX = 0.02
-        self.deltaT = 0.5 * (self.deltaX*self.deltaX)
-        self.alpha = 0.25 * self.deltaT/(self.deltaX*self.deltaX)
+        if self.is3D == True:
+            self.sigma = 0.5
+            self.deltaX = 0.15 # 0.02
+            self.deltaT = 0.25 * (self.deltaX**3)
+            self.alpha = 0.5 * self.deltaT/(self.deltaX**2)            
+        else:
+            self.sigma = 0.5
+            self.deltaX = 0.02
+            self.deltaT = 0.5 * (self.deltaX*self.deltaX)
+            self.alpha = 0.25 * self.deltaT/(self.deltaX*self.deltaX)
 
         # Initial Position
         self.origin = np.ceil(latticeSize / 2)
@@ -59,7 +66,6 @@ class Wavepacket():
         self.totalTime = int((totalSeconds * self.fps) * 2) # Times 2 to include the half time steps
         self.wavepacket = wavepacket
         self.potential = potential
-        self.is3D = is3D
 
         # Create simulation arrays
         if self.potential == "Infinite Box":
@@ -133,15 +139,20 @@ class Wavepacket():
             self.latticeReal[0] = np.real(self.latticeComplex)
             self.latticeImag[1] = np.imag(self.latticeComplex)
 
+            # Switch to a boolean mask if we have the time, cut down on lines
             if self.potential == "Infinite Box":
-                self.latticeReal[0, 0, :, 0] = 0
-                self.latticeReal[0, self.latticeSize - 1, :, 0] = 0
-                self.latticeReal[0, :, 0, 0] = 0
-                self.latticeReal[0, :, self.latticeSize - 1, 0] = 0
-                self.latticeImag[0, 0, :, 0] = 0
-                self.latticeImag[0, self.latticeSize - 1, :, 0] = 0
-                self.latticeImag[0, :, 0, 0] = 0
-                self.latticeImag[0, :, self.latticeSize - 1, 0] = 0
+                self.latticeReal[:, 0, :, :] = 0
+                self.latticeReal[:, self.latticeSize - 1, :, :] = 0
+                self.latticeReal[:, :, 0, :] = 0
+                self.latticeReal[:, :, self.latticeSize - 1, :] = 0
+                self.latticeReal[:, :, :, 0] = 0
+                self.latticeReal[:, :, :, self.latticeSize - 1] = 0
+                self.latticeImag[:, 0, :, :] = 0
+                self.latticeImag[:, self.latticeSize - 1, :, :] = 0
+                self.latticeImag[:, :, 0, :] = 0
+                self.latticeImag[:, :, self.latticeSize - 1, :] = 0
+                self.latticeImag[:, :, :, 0] = 0
+                self.latticeImag[:, :, :, self.latticeSize - 1] = 0
 
         else:
             print("-[wavepacket.py] createLattice(): Unknown wavepacket type for initial conditions! (use 'Gaussian')")
@@ -175,12 +186,30 @@ class Wavepacket():
                 self.latticeReal[t + 1, 1:-1, 1:-1, 1:-1] = (self.latticeReal[t - 1, 1:-1, 1:-1, 1:-1]
                                                                                         + 2 * ((4 * self.alpha + 0.5 * self.deltaT * self.V[1:-1, 1:-1, 1:-1]) * self.latticeImag[t, 1:-1, 1:-1, 1:-1]
                                                                                          - self.alpha * (self.latticeImag[t, 2:, 1:-1, 1:-1] + self.latticeImag[t, :-2, 1:-1, 1:-1]
-                                                                                        + self.latticeImag[t, 1:-1, 2:, 1:-1] + self.latticeImag[t, 1:-1, :-2, 1:-1])))
+                                                                                        + self.latticeImag[t, 1:-1, 2:, 1:-1] + self.latticeImag[t, 1:-1, :-2, 1:-1]
+                                                                                        + self.latticeImag[t, 1:-1, 1:-1, 2:] + self.latticeImag[t, 1:-1, 1:-1, :-2])))
                 self.latticeImag[t + 1, 1:-1, 1:-1, 1:-1] = (self.latticeImag[t - 1, 1:-1, 1:-1, 1:-1]
                                                                                      - 2 * ((4 * self.alpha + 0.5 * self.deltaT * self.V[1:-1, 1:-1, 1:-1]) * self.latticeReal[t, 1:-1, 1:-1, 1:-1]
                                                                                     + self.alpha * (self.latticeReal[t, 2:, 1:-1, 1:-1] + self.latticeReal[t, :-2, 1:-1, 1:-1]
-                                                                                    + self.latticeReal[t, 1:-1, 2:, 1:-1] + self.latticeReal[t, 1:-1, :-2, 1:-1])))
+                                                                                    + self.latticeReal[t, 1:-1, 2:, 1:-1] + self.latticeReal[t, 1:-1, :-2, 1:-1]
+                                                                                    + self.latticeReal[t, 1:-1, 1:-1, 2:] + self.latticeReal[t, 1:-1, 1:-1, :-2])))
+                # If we're doing the Infinite Box potential, set all edges to 0 due to infinite boundary
+                # Switch to a boolean mask if we have the time, cut down on lines
+                if self.potential == "Infinite Box":
+                    self.latticeReal[t + 1, 0, :, :] = 0
+                    self.latticeReal[t + 1, self.latticeSize - 1, :, :] = 0
+                    self.latticeReal[t + 1, :, 0, :] = 0
+                    self.latticeReal[t + 1, :, self.latticeSize - 1, :] = 0
+                    self.latticeReal[t + 1, :, :, 0] = 0
+                    self.latticeReal[t + 1, :, :, self.latticeSize - 1] = 0
+                    self.latticeImag[t + 1, 0, :, :] = 0
+                    self.latticeImag[t + 1, self.latticeSize - 1, :, :] = 0
+                    self.latticeImag[t + 1, :, 0, :] = 0
+                    self.latticeImag[t + 1, :, self.latticeSize - 1, :] = 0
+                    self.latticeImag[t + 1, :, :, 0] = 0
+                    self.latticeImag[t + 1, :, :, self.latticeSize - 1] = 0
 
+                print("-[wavepacket.py] [{}%] Simulating real and imaginary wavefunctions in 3D...".format(100 * (np.floor(t / self.totalTime))), end = '\r')
         else:
             for t in range(1, self.totalTime - 1):
                 # Calculate next real and imaginary wavefunction, excluding borders
@@ -276,19 +305,21 @@ class Wavepacket():
 
 ##### Test stuff
 
-sim3D = False
+sim3D = True
 
-testPacket = Wavepacket(99, 1, "Gaussian", "Harmonic", sim3D)
+testPacket = Wavepacket(33, 4, "Gaussian", "Harmonic", sim3D)
 
 testPacket.createLattice()
 testPacket.integrateLattice()
 testPacket.calculateProbability()
 
-view.animateDataSet("Test2DHarmonic", testPacket.probDataSet, (0.5 * np.pi), sim3D)
+view.animateDataSet("Test3DHarmonic", testPacket.probDataSet, 0, sim3D) # (0.5 * np.pi)
 
-#print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
+print(testPacket.probDataSet[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4,
+int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4])
 #print(testPacket.probDataSet[2, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
-#print(testPacket.probDataSet[23, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
+print(testPacket.probDataSet[23, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4,
+int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4])
 
 #print(testPacket.latticeReal[0, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
 #print(testPacket.latticeReal[46, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, int(testPacket.latticeSize / 2) - 3:int(testPacket.latticeSize / 2) + 4, 0])
