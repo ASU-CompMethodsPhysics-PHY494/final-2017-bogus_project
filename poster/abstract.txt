@@ -1,5 +1,8 @@
-Title of the final project
+Visualizing Quantum Wavepackets
 
-author 1, author 2, author 3
+Nate Chrisman, Brian Pickens, Andrew Shurman
 
-Text of the abstract. It should not be longer than 200 words. Describe concisely what the problem is that you want to solve, what approach/methods you used (but keep it at a high level, don't write what you called your functions etc), and what your results are. Keep it all one paragraph. The idea is that a reader should be able to understand in 2 minutes or less what you are doing, how you are doing it, and what you get. Finish with one sentence on conclusions or future work. Finally include a statement along the following lines: Code is available at <URL> [under <LICENSE>]. --- Licensing is  optional, see https://github.com/blog/1530-choosing-an-open-source-license which will send you to http://choosealicense.com/. REPLACE ALL THE TEXT IN THIS ABSTRACT WITH YOUR OWN TITLE, AUTHOR NAMES AND ABSTRACT. THEN COMMIT AND PUT "added abstract" IN THE COMMIT MESSAGE.
+The goal of this project was to visualize a quantum wavepacket in 2-D and 3-D within a box and isotropic harmonic oscillator potential. The method of approach included the use of a stepping algorithm to determine the real and imaginary parts of the wave equation in alternating half time-steps (Maestri et al.) and then using two modules, YT and imageio, to create images of the time-evolution of the wavepacket. To test the accuracy of the solutions, constant calculations of total probability and the observation of phenomena such as quantum revival were used. Images of a wavepacket in both potentials was observed, however, these proved to be incorrect as neither probability was conserved nor was quantum revival observed. The cause of the error has yet to be determined even through extensive rework of the algorithm implementation leading us to believe that the problem maybe with the algorithm itself. Future work would include exploring other algorithms that meet our requirements.
+
+
+Code is available at https://github.com/ASU-CompMethodsPhysics-PHY494/final-2017-bogus_project under MIT License
